@@ -7,7 +7,8 @@ import java.util.regex.Pattern;
 import java.util.Scanner;
 
 public class DAO {
-    List<DTO> members = new ArrayList<DTO>();
+    DTO dto = new DTO();
+    List<List<Object>> members = new ArrayList<>();
     int logInData = -1;
 
     // 메뉴
@@ -26,11 +27,9 @@ public class DAO {
         System.out.print("\n회원가입을 시작합니다.");
         wait1Sec();
         System.out.println("\n".repeat(50));
-        DTO dto = new DTO();
         while (true) {
             System.out.println("\n아이디를 입력하세요.");
             System.out.print("입력값은 알파벳과 숫자, _만 가능합니다.\n> ");
-            dto.setName(sc.nextLine());
             invalidID();
             System.out.print("\n이름을 입력하세요.\n> ");
             invalidName();
@@ -59,20 +58,10 @@ public class DAO {
         }
     }
 
+
     // 데이터 삽입
     void insert() {
-        System.out.println("\n아이디를 입력하세요.");
-        System.out.print("입력값은 알파벳과 숫자, _만 가능합니다.\n> ");
-        invalidID();
-        System.out.print("\n이름을 입력하세요.\n> ");
-        invalidName();
-        System.out.print("\n생년월일을 입력하세요.\n> ");
-        invalidBirthDate();
-        System.out.print("\n이메일을 입력하세요.\n> ");
-        invalidEmail();
-        System.out.print("\n주소를 입력하세요.\n> ");
-        invalidAddress();
-        members.add(dto);
+        members.add(Arrays.asList(dto.getID(), dto.getName(), dto.getBirthDate(), dto.getEmail(), dto.getAddress()));
     }
 
 
@@ -113,9 +102,9 @@ public class DAO {
         initializeConsole();
         System.out.println("어떤 정보를 변경하시겠습니까?");
         wait1Sec();
-        System.out.println("\n\n\n===================================");
+        System.out.println("\n\n===================================");
         System.out.println("1.아이디   2.이름   3.이메일   4.주소");
-        System.out.print("===================================\n\n> ");
+        System.out.print("===================================\n\n\n\n> ");
         String temp = sc.nextLine();
         switch (temp) {
             case "1":
@@ -128,12 +117,12 @@ public class DAO {
                     if(currentID.equals(members.get(logInData).get(0))) {
                         break;
                     }
-                    waitingDot();
+//                    waitingDot();
                     System.out.print("\n\n입력하신 아이디가 현재 아이디와 일치하지 않습니다.\n");
-                    Thread.sleep(500);
+                    wait1Sec();
                     System.out.print("다시 입력해주세요.\n> ");
                 }
-                waitingDot();
+//                waitingDot();
                 System.out.print("\n아이디가 확인되었습니다.");
                 Thread.sleep(500);
                 System.out.print("\n변경하실 아이디를 입력해주세요.\n> ");
@@ -143,6 +132,7 @@ public class DAO {
                     String nextIDCheck = sc.nextLine();
                     if(nextID.equals(nextIDCheck)) {
                         System.out.print("\n아이디가 성공적으로 변경되었습니다.");
+                        dto.setID(nextID);
                         wait1Sec();
                         break;
                     }
@@ -168,22 +158,19 @@ public class DAO {
             String inputBirthDate = sc.nextLine();
 
             for(int i=0; i<members.size(); i++) {
-                if(inputID.equals(members.get(i).getID()) && inputBirthDate.equals(members.get(i).getBirthDate())) {
+                if(inputID.equals(members.get(i).get(0)) && inputBirthDate.equals(members.get(i).get(2))) {
                     wait1Sec();
                     System.out.println("\n\n\n--------------------------------------");
-                    System.out.println(" 아이디: " + members.get(i).getID());
-                    System.out.println(" 이름: " + members.get(i).getName());
-                    System.out.println(" 생년월일: " + members.get(i).getBirthDate());
-                    System.out.println(" 이메일: " + members.get(i).getEmail());
-                    System.out.println(" 주소: " + members.get(i).getAddress());
+                    System.out.println(" 아이디: " + members.get(i).get(0));
+                    System.out.println(" 이름: " + members.get(i).get(1));
+                    System.out.println(" 생년월일: " + members.get(i).get(2));
+                    System.out.println(" 이메일: " + members.get(i).get(3));
+                    System.out.println(" 주소: " + members.get(i).get(4));
                     System.out.println("--------------------------------------");
                     wait1Sec();
-                    for(int j=0; j<3; j++) {
-                        System.out.print(" ");
-                        System.out.print(".");
-                        wait1Sec();
-                    }
-                    System.out.println("\n메뉴로 돌아가시려면 아무 키를 입력해주세요.");
+//                    waitingDot();
+                    System.out.println("\n\n메뉴로 돌아가시려면 아무 키를 입력해주세요.");
+                    wait1Sec();
                     System.out.print("다시 입력하고 싶으시면 y키를 눌러주세요\n> ");
                     String temp = sc.nextLine();
                     if(temp.equals("y") || temp.equals("Y")) {
@@ -222,17 +209,17 @@ public class DAO {
 
     // 잘못된 값 입력
     void defaultMessage() throws InterruptedException {
-        String defaultMessage = "잘못된 값을 입력하셨습니다.";
+        String  defaultMessage= "잘못된 값을 입력하셨습니다.";
         for(String s : defaultMessage.split("")) {
             System.out.print(s);
             Thread.sleep(100);
         }
-        Thread.sleep(500);
+        wait1Sec();
     }
 
     
     // 회원가입 유효성 검사
-    private boolean checkID(DTO dto) {
+    private boolean checkID() {
         Scanner sc = new Scanner(System.in);
         dto.setID(sc.nextLine());
         Pattern patternID = Pattern.compile("([A-Za-z0-9]+_?){4,}");
