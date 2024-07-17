@@ -10,6 +10,7 @@ public class DAO {
     List<DTO> members = new ArrayList<DTO> ();
     int logInData = -1;
 
+    // 이거 수정
     // 메뉴
     void menu() {
         initializeConsole();
