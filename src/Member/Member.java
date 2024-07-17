@@ -7,11 +7,7 @@ public class Member {
 		DAO dao = new DAO();
 
 		while(true) {
-			for(int i=0; i<5; i++) {
-				System.out.println("\n\n\n\n\n\n");
-			}
 			dao.menu();
-			System.out.print("> ");
 			String select = sc.nextLine();
 
 			switch (select) {
@@ -20,16 +16,22 @@ public class Member {
 					break;
 
 				case "2":
+					dao.logIn();
 					break;
 
 				case "3":
+					dao.logOut();
 					break;
 
 				case "4":
-					dao.print();
+					dao.change();
 					break;
 
 				case "5":
+					dao.print();
+					break;
+
+				case "6":
 					break;
 
 				case "0":
