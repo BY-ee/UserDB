@@ -20,14 +20,18 @@ public class Member {
 					break;
 
 				case "3":
-					dao.change();
+					dao.logOut();
 					break;
 
 				case "4":
-					dao.print();
+					dao.change();
 					break;
 
 				case "5":
+					dao.print();
+					break;
+
+				case "6":
 					break;
 
 				case "0":
