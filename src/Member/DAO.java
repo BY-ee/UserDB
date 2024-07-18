@@ -114,7 +114,7 @@ public class DAO {
             logInData = -1;
             sequenceMessage("\n정상적으로 로그아웃되었습니다.");
             wait05Sec();
-            sequenceMessage("\n메인 화면으로 이동합니다");
+            sequenceMessage("\n메인 화면으로 이동합니다.");
             wait1Sec();
             return;
         }
@@ -135,16 +135,16 @@ public class DAO {
         }
         initializeConsole();
         System.out.print("어떤 정보를 변경하시겠습니까?");
-        wait1Sec();
-        System.out.print("\n\n\n===================================");
-        System.out.print("\n1.아이디   2.이름   3.이메일   4.주소");
-        System.out.print("\n===================================\n\n\n\n> ");
+        wait05Sec();
+        System.out.print("\n\n\n=============================================");
+        System.out.print("\n1.아이디   2.비밀번호   3.이름   4.이메일   5.주소");
+        System.out.print("\n=============================================\n\n\n\n> ");
         String temp = sc.nextLine();
         DTO dto = new DTO();
         switch (temp) {
             case "1":
                 System.out.print("\n아이디 변경을 시작합니다.");
-                wait1Sec();
+                wait05Sec();
                 initializeConsole();
                 System.out.print("\n현재 아이디를 입력해주세요.\n> ");
                 while(true) {
@@ -153,11 +153,11 @@ public class DAO {
                         break;
                     }
                     System.out.print("\n\n입력하신 아이디가 현재 아이디와 일치하지 않습니다.");
-                    wait1Sec();
+                    wait05Sec();
                     System.out.print("\n\n현재 아이디를 다시 입력해주세요.\n> ");
                 }
                 System.out.print("\n아이디가 확인되었습니다.");
-                wait1Sec();
+                wait05Sec();
                 System.out.print("\n변경하실 아이디를 입력해주세요.\n> ");
                 while(true) {
                     dto.setID(sc.nextLine());
@@ -173,11 +173,57 @@ public class DAO {
                         wait05Sec();
                         sequenceMessage("\n메인 화면으로 이동합니다.");
                         wait1Sec();
-                        break;
+                        return;
                     }
                     System.out.print("\n입력하신 아이디가 일치하지 않습니다.");
-                    System.out.print("\n변경하실 아이디를 다시 입력해주세요.\n> ");
+                    wait05Sec();
+                    System.out.print("\n\n변경하실 아이디를 다시 입력해주세요.\n> ");
                 }
+            case "2":
+                System.out.print("\n비밀번호 변경을 시작합니다.");
+                wait05Sec();
+                initializeConsole();
+                System.out.print("\n현재 비밀번호를 입력해주세요.\n> ");
+                while(true) {
+                    dto.setPassword(sc.nextLine());
+                    if(dto.getPassword().equals(members.get(logInData).getPassword())) {
+                        break;
+                    }
+                    System.out.print("\n\n입력하신 비밀번호가 현재 비밀번호와 일치하지 않습니다.");
+                    wait05Sec();
+                    System.out.print("\n\n현재 비밀번호를 다시 입력해주세요.\n> ");
+                }
+                System.out.print("\n비밀번호가 확인되었습니다.");
+                wait05Sec();
+                System.out.print("\n변경하실 비밀번호를 입력해주세요.\n> ");
+                while(true) {
+                    dto.setPassword(sc.nextLine());
+                    if(!dto.getPassword().equals(members.get(logInData).getPassword())) break;
+                    System.out.print("\n현재 비밀번호와 동일합니다. 새로운 비밀번호를 입력해주세요.\n> ");
+                }
+                while(true) {
+                    System.out.print("\n변경하실 비밀번호를 한번 더 입력해주세요.\n> ");
+                    String nextPasswordCheck = sc.nextLine();
+                    if(nextPasswordCheck.equals(dto.getPassword())) {
+                        sequenceMessage("\n비밀번호가 성공적으로 변경되었습니다.");
+                        members.get(logInData).setPassword(dto.getPassword());
+                        wait05Sec();
+                        sequenceMessage("\n메인 화면으로 이동합니다.");
+                        wait1Sec();
+                        return;
+                    }
+                }
+            case "3":
+                break;
+            case "4":
+                break;
+            case "5":
+                break;
+            default:
+                sequenceMessage("\n잘못된 값이 입력되었습니다.");
+                wait05Sec();
+                sequenceMessage("\n메인 화면으로 이동합니다.");
+                wait1Sec();
         }
     }
 
@@ -199,7 +245,7 @@ public class DAO {
             dto.setBirthDate(sc.nextLine());
 
             for(int i=0; i<members.size(); i++) {
-                if(dto.getID().equals(members.get(i).getID()) && dto.getBirthDate().equals(members.get(i).getBirthDate())) {
+                if (dto.getID().equals(members.get(i).getID()) && dto.getBirthDate().equals(members.get(i).getBirthDate())) {
                     wait05Sec();
                     System.out.println("\n\n\n--------------------------------------");
                     System.out.println(" 아이디: " + members.get(i).getID());
@@ -209,29 +255,21 @@ public class DAO {
                     System.out.println(" 주소: " + members.get(i).getAddress());
                     System.out.println("--------------------------------------");
                     wait1Sec();
-//                    waitingDot();
-                    System.out.print("\n메뉴로 돌아가시려면 아무 키를 입력해주세요.");
-                    wait05Sec();
-                    System.out.print("\n다시 입력하고 싶으시면 y키를 입력해주세요\n> ");
-                    String temp = sc.nextLine();
-                    if(temp.equals("Y") || temp.equals("y")) {
-                        initializeConsole();
-                        continue;
-                    }
-                    sequenceMessage("\n메인 화면으로 이동합니다.");
-                    wait1Sec();
-                    return;
-                }
-                System.out.println("\n해당하는 정보가 없습니다.");
-                wait05Sec();
-                System.out.print("다시 입력하고 싶으시면 y키를 입력해주세요.\n> ");
-                String temp = sc.nextLine();
-                if(!(temp.equals("Y") || temp.equals("y"))) {
-                    sequenceMessage("\n메인 화면으로 이동합니다.");
-                    wait1Sec();
-                    return;
                 }
             }
+            System.out.print("\n해당하는 정보가 없습니다.");
+            wait05Sec();
+            System.out.print("\n다시 입력하고 싶으시면 y키를 입력해주세요");
+            wait05Sec();
+            System.out.print("\n메뉴로 돌아가시려면 아무 키를 입력해주세요.\n> ");
+            String temp = sc.nextLine();
+            if(temp.equals("Y") || temp.equals("y")) {
+                initializeConsole();
+                continue;
+            }
+            sequenceMessage("\n메인 화면으로 이동합니다.");
+            wait1Sec();
+            return;
         }
     }
 
@@ -498,5 +536,20 @@ public class DAO {
             return true;
         }
         return false;
+    }
+
+
+    // 메인 화면 복귀 && y 입력 시 재입력 선택지
+    void mainReturn() throws InterruptedException {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("\n다시 입력하고 싶으시면 y키를 입력해주세요");
+        wait05Sec();
+        System.out.print("\n메뉴로 돌아가시려면 아무 키를 입력해주세요.\n> ");
+        String temp = sc.nextLine();
+        if(temp.equals("Y") || temp.equals("y")) {
+            initializeConsole();
+        }
+        sequenceMessage("\n메인 화면으로 이동합니다.");
+        wait1Sec();
     }
 }
