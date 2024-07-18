@@ -31,6 +31,7 @@ public class DAO {
         System.out.println("\n".repeat(50));
         while (true) {
             dto.setID(signUpID());
+            dto.setPassword(signUpPassword());
             dto.setName(signUpName());
             dto.setBirthDate(signUpBirthDate());
             dto.setEmail(signUpEmail());
@@ -45,7 +46,7 @@ public class DAO {
             if (!cond) {
                 sequenceMessage("\n회원가입이 완료되었습니다.");
                 members.add(dto);
-                wait1Sec();
+                wait05Sec();
                 sequenceMessage("\n메인 화면으로 이동합니다.");
                 break;
             }
@@ -58,24 +59,24 @@ public class DAO {
     // 로그인
     void logIn() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
-        System.out.print("\n아이디와 생년월일을 입력하세요.\n> ");
+        System.out.print("\n아이디와 비밀번호를 입력하세요.\n> ");
         while(true) {
             for(int i=0; i<members.size(); i++) {
                 String inputID = sc.nextLine();
-                if(inputID.equals("x")) return;
+                if(inputID.equals("x") || inputID.equals("X")) return;
                 System.out.print("> ");
-                String inputBirthDate = sc.nextLine();
-                if(inputBirthDate.equals("x")) return;
-                if (inputID.equals(members.get(i).getID()) && inputBirthDate.equals(members.get(i).getBirthDate())) {
+                String inputPassword = sc.nextLine();
+                if(inputPassword.equals("x")) return;
+                if (inputID.equals(members.get(i).getID()) && inputPassword.equals(members.get(i).getPassword())) {
                     sequenceMessage("\n로그인에 성공하였습니다.");
                     logInData = i;
-                    wait1Sec();
+                    wait05Sec();
                     sequenceMessage("\n메인 화면으로 이동합니다.");
                     return;
                 } else {
                     System.out.print("\n로그인에 실패하였습니다.");
-                    wait1Sec();
-                    System.out.print("\n\n아이디와 생년월일을 다시 입력하세요.\n> ");
+                    wait05Sec();
+                    System.out.print("\n\n아이디와 비밀번호를 다시 입력해주세요.\n> ");
                 }
             }
         }
@@ -85,23 +86,23 @@ public class DAO {
     //로그아웃
     void logOut() throws InterruptedException {
         if(logInData == -1) {
-            System.out.println("\n로그인이 되어 있지 않은 상태입니다.");
+            System.out.print("\n로그인되어 있지 않은 상태입니다.");
             wait1Sec();
             return;
         }
         Scanner sc = new Scanner(System.in);
         System.out.print("\n로그아웃하시려면 y키를 눌러주세요.\n> ");
         String temp = sc.nextLine();
-        if(temp.equals("y")) {
+        if(temp.equals("Y") || temp.equals("y")) {
             logInData = -1;
-            sequenceMessage("\n정상적으로 로그아웃되었습니다.\n");
-            wait1Sec();
-            sequenceMessage("메인 화면으로 이동합니다");
+            sequenceMessage("\n정상적으로 로그아웃되었습니다.");
+            wait05Sec();
+            sequenceMessage("\n메인 화면으로 이동합니다");
             wait1Sec();
             return;
         }
         sequenceMessage("\n작업을 취소하셨습니다.");
-        Thread.sleep(1000);
+        wait05Sec();
         sequenceMessage("\n메인 화면으로 이동합니다.");
         wait1Sec();
     }
@@ -141,7 +142,7 @@ public class DAO {
                 }
 //                waitingDot();
                 System.out.print("\n아이디가 확인되었습니다.");
-                Thread.sleep(1000);
+                wait1Sec();
                 System.out.print("\n변경하실 아이디를 입력해주세요.\n> ");
                 while(true) {
                     dto.setID(sc.nextLine());
@@ -150,7 +151,7 @@ public class DAO {
                     if(nextIDCheck.equals(dto.getID())) {
                         sequenceMessage("\n아이디가 성공적으로 변경되었습니다.");
                         members.get(logInData).setID(dto.getID());
-                        wait1Sec();
+                        wait05Sec();
                         sequenceMessage("\n메인 화면으로 이동합니다.");
                         break;
                     }
@@ -189,20 +190,20 @@ public class DAO {
                     wait1Sec();
 //                    waitingDot();
                     System.out.print("\n메뉴로 돌아가시려면 아무 키를 입력해주세요.");
-                    wait1Sec();
+                    wait05Sec();
                     System.out.print("\n다시 입력하고 싶으시면 y키를 눌러주세요\n> ");
                     String temp = sc.nextLine();
-                    if(temp.equals("y") || temp.equals("Y")) {
+                    if(temp.equals("Y") || temp.equals("y")) {
                         continue;
                     }
                     sequenceMessage("\n\n메인 화면으로 이동합니다.");
                     return;
                 }
                 System.out.println("\n해당하는 정보가 없습니다.");
-                Thread.sleep(1000);
+                wait1Sec();
                 System.out.print("다시 입력하고 싶으시면 y키를 눌러주세요.\n> ");
                 String temp = sc.nextLine();
-                if(!(temp.equals("y") || temp.equals("Y"))) {
+                if(!(temp.equals("Y") || temp.equals("y"))) {
                     sequenceMessage("메인 화면으로 이동합니다.");
                     return;
                 }
@@ -212,6 +213,15 @@ public class DAO {
 
     
     // 회원탈퇴
+    void withdraw() throws InterruptedException {
+        if(logInData == -1) {
+            System.out.print("\n로그인되어 있지 않은 상태입니다.");
+            wait1Sec();
+            return;
+        }
+        initializeConsole();
+    }
+
 
 
     // 프로그램 종료
@@ -230,22 +240,50 @@ public class DAO {
     
     // 회원가입 유효성 검사
     private boolean validID(String inputID) {
-        Pattern patternID = Pattern.compile("([A-Za-z0-9]+_?){4,}");
+        Pattern patternID = Pattern.compile("[A-Za-z0-9_]{4,}");
         Matcher matcherID = patternID.matcher(inputID);
         return matcherID.matches();
     }
 
-    String signUpID() {
+    String signUpID() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
-        System.out.println("\n아이디를 입력하세요.");
-        System.out.print("입력값은 알파벳과 숫자, _만 가능합니다.\n> ");
+        System.out.print("\n아이디를 입력하세요.");
+        wait05Sec();
+        System.out.print("\n알파벳과 숫자, _만 입력 가능합니다.\n> ");
         String inputID = sc.nextLine();
         while(!validID(inputID)) {
-            System.out.println("\n아이디를 다시 입력하세요.");
-            System.out.print("입력값은 알파벳과 숫자, _만 가능합니다.\n> ");
+            System.out.print("\n아이디를 다시 입력하세요.");
+            wait05Sec();
+            System.out.print("\n알파벳과 숫자, _만 입력 가능합니다.\n> ");
             inputID = sc.nextLine();
         }
+        System.out.print("\n아이디가 확인되었습니다.");
+        wait1Sec();
         return inputID;
+    }
+
+    private boolean validPassword(String inputPassword) {
+        Pattern patternPassword = Pattern.compile("(.*[A-Z])(.*[!@#$%^&*()])(.{4,})");
+        Matcher matcherPassword = patternPassword.matcher(inputPassword);
+        return matcherPassword.matches();
+    }
+
+    String signUpPassword() throws InterruptedException {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("\n\n비밀번호를 입력하세요.");
+        wait05Sec();
+        System.out.print("\n비밀번호는 8자 이상이어야 하며, 하나 이상의 대문자, 특수문자를 포함해야 합니다.\n> ");
+        String inputPassword = sc.nextLine();
+        while(!validPassword(inputPassword)) {
+            System.out.print("\n비밀번호를 다시 입력하세요.");
+            wait05Sec();
+            System.out.print("\n비밀번호는 8자 이상이어야 하며, 하나 이상의 대문자, 특수문자를 포함해야 합니다.\n> ");
+            inputPassword = sc.nextLine();
+        }
+        System.out.print("\n비밀번호가 확인되었습니다.");
+        wait1Sec();
+        initializeConsole();
+        return inputPassword;
     }
 
     private boolean validName(String inputName) {
@@ -349,6 +387,11 @@ public class DAO {
         Thread.sleep(1000);
     }
 
+    // 0.5초 대기
+    void wait05Sec() throws InterruptedException {
+        Thread.sleep(500);
+    }
+
 
     // 콘솔창 초기화
     void initializeConsole() {
@@ -363,5 +406,16 @@ public class DAO {
             Thread.sleep(100);
         }
         wait1Sec();
+    }
+
+
+    // x키 입력으로 메인 화면 이동
+    boolean moveMain(String input) throws InterruptedException {
+        System.out.print("\n메인 화면으로 이동하시려면 x 키를 눌러주세요");
+        if(input.equals("X") || input.equals("x")) {
+            sequenceMessage("메인 화면으로 이동합니다.");
+            return true;
+        }
+        return false;
     }
 }
