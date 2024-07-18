@@ -2,6 +2,7 @@ package Member;
 
 class DTO {
     private String ID;
+    private String password;
     private String name;
     private String birthDate;
     private String email;
@@ -12,6 +13,8 @@ class DTO {
     public void setID(String ID) {
         this.ID = ID;
     }
+
+    public void setPassword(String password) { this.password = password; }
 
     public void setName(String name) {
         this.name = name;
@@ -34,6 +37,8 @@ class DTO {
     public String getID() {
         return this.ID;
     }
+
+    public String getPassword() { return this.password; }
 
     public String getName() {
         return this.name;

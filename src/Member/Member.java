@@ -32,6 +32,7 @@ public class Member {
 					break;
 
 				case "6":
+					dao.withdraw();
 					break;
 
 				case "0":
