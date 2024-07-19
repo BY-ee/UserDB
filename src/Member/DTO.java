@@ -1,6 +1,9 @@
 package Member;
 
-class DTO {
+import java.io.Serializable;
+
+class DTO implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String ID;
     private String password;
     private String name;
