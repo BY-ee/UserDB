@@ -1,8 +1,9 @@
 package Member;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Member {
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, IOException {
 		Scanner sc = new Scanner(System.in);
 		DAO dao = new DAO();
 
