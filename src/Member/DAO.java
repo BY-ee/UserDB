@@ -157,7 +157,7 @@ public class DAO {
                 moveMainWithMessage("로그아웃을 취소하였습니다.");
                 return;
             }
-            sequenceMessage("\n잘못된 값이 입력되었습니다.");
+            sequenceMessage("\n잘못된 값이 입력되었습니다.\n");
             wait05Sec();
         }
     }
@@ -183,7 +183,7 @@ public class DAO {
                 sequenceMessage("\n아이디 변경을 시작합니다.");
                 wait05Sec();
                 initializeConsole();
-                askMainWithMessage("\n현재 아이디를 입력해주세요.");
+                askMainWithMessage("현재 아이디를 입력해주세요.");
                 while(true) {
                     dto.setID(sc.nextLine());
                     if(dto.getID().equals("X") || dto.getID().equals("x")) {
@@ -192,9 +192,9 @@ public class DAO {
                     } else if(dto.getID().equals(members.get(logInData).getID())) {
                         break;
                     }
-                    askMainWithMessage2("\n\n입력하신 아이디가 현재 아이디와 일치하지 않습니다.", "\n\n현재 아이디를 다시 입력해주세요.");
+                    askMainWithMessage2("입력하신 아이디가 현재 아이디와 일치하지 않습니다.", "현재 아이디를 다시 입력해주세요.");
                 }
-                askMainWithMessage2("\n아이디가 확인되었습니다.", "\n변경하실 아이디를 입력해주세요.");
+                askMainWithMessage2("아이디가 확인되었습니다.", "변경하실 아이디를 입력해주세요.");
                 while(true) {
                     while(true) {
                         dto.setID(sc.nextLine());
@@ -212,16 +212,16 @@ public class DAO {
                     String nextIDCheck = sc.nextLine();
                     if(nextIDCheck.equals(dto.getID())) {
                         members.get(logInData).setID(dto.getID());
-                        moveMainWithMessage("\n아이디가 성공적으로 변경되었습니다.");
+                        moveMainWithMessage("아이디가 성공적으로 변경되었습니다.");
                         return;
                     }
-                    askMainWithMessage2("\n입력하신 아이디가 일치하지 않습니다.", "\n\n변경하실 아이디를 다시 입력해주세요.");
+                    askMainWithMessage2("입력하신 아이디가 일치하지 않습니다.", "변경하실 아이디를 다시 입력해주세요.");
                 }
             case "2":
                 sequenceMessage("\n비밀번호 변경을 시작합니다.");
                 wait1Sec();
                 initializeConsole();
-                askMainWithMessage("\n현재 비밀번호를 입력해주세요.");
+                askMainWithMessage("현재 비밀번호를 입력해주세요.");
                 while(true) {
                     dto.setPassword(sc.nextLine());
                     if(dto.getPassword().equals("X") || dto.getPassword().equals("x")) {
@@ -236,7 +236,8 @@ public class DAO {
                 }
                 sequenceMessage("\n비밀번호가 확인되었습니다.");
                 wait05Sec();
-                askMainWithMessage("\n\n변경하실 비밀번호를 입력해주세요.");
+                initializeConsole();
+                askMainWithMessage("\n변경하실 비밀번호를 입력해주세요.");
                 while(true) {
                     while(true) {
                         dto.setPassword(sc.nextLine());
@@ -244,21 +245,21 @@ public class DAO {
                             moveMain();
                             return;
                         } else if(!validPassword(dto.getPassword())) {
-                            askMainWithMessage2("\n비밀번호의 형식에 맞게 다시 입력해주세요.",
-                                                "\n\n비밀번호는 8자 이상이어야 하며, 대소문자와 특수문자, 숫자를 각각 하나 이상 포함해야 합니다.");
+                            askMainWithMessage2("비밀번호의 형식에 맞게 다시 입력해주세요.",
+                                                "비밀번호는 8자 이상이어야 하며, 대소문자와 특수문자, 숫자를 각각 하나 이상 포함해야 합니다.");
                             continue;
                         }
                         if(!dto.getPassword().equals(members.get(logInData).getPassword())) break;
-                        askMainWithMessage("\n현재 비밀번호와 동일합니다. 새로운 비밀번호를 입력해주세요.");
+                        askMainWithMessage("현재 비밀번호와 동일합니다. 새로운 비밀번호를 입력해주세요.");
                     }
                     sequenceMessage("\n변경하실 비밀번호를 한번 더 입력해주세요.\n> ");
                     String nextPasswordCheck = sc.nextLine();
                     if(nextPasswordCheck.equals(dto.getPassword())) {
                         members.get(logInData).setPassword(dto.getPassword());
-                        moveMainWithMessage("\n비밀번호가 성공적으로 변경되었습니다.");
+                        moveMainWithMessage("비밀번호가 성공적으로 변경되었습니다.");
                         return;
                     }
-                    askMainWithMessage2("\n입력하신 비밀번호가 일치하지 않습니다.", "\n\n변경하실 비밀번호를 다시 입력해주세요.");
+                    askMainWithMessage2("입력하신 비밀번호가 일치하지 않습니다.", "변경하실 비밀번호를 다시 입력해주세요.");
                 }
             case "3":
                 sequenceMessage("\n이름 변경을 시작합니다.");
@@ -266,7 +267,7 @@ public class DAO {
                 sequenceMessage("\n\n이름은 개명하신 경우에만 최초 1회 변경할 수 있습니다.");
                 wait1Sec();
                 initializeConsole();
-                askMainWithMessage("\n개명하신 이름을 입력해주세요.");
+                askMainWithMessage("개명하신 이름을 입력해주세요.");
                 while(true) {
                     while(true) {
                         dto.setName(sc.nextLine());
@@ -275,30 +276,30 @@ public class DAO {
                             return;
                         }
                         if(!validName(dto.getName())) {
-                            askMainWithMessage("\n이름을 정확히 다시 입력해주세요.");
+                            askMainWithMessage("이름을 정확히 다시 입력해주세요.");
                             wait1Sec();
                             continue;
                         }
                         if(!dto.getName().equals(members.get(logInData).getName())) break;
                         sequenceMessage("\n현재 이름과 동일합니다. 개명하신 이름을 입력해주세요.\n> ");
                     }
-                    String printName = "\n입력하신 이름은 \'" + dto.getName() + "입니다.";
+                    String printName = "\n입력하신 이름은 \'" + dto.getName() + "\'입니다.";
                     sequenceMessage(printName);
                     wait05Sec();
-                    sequenceMessage("\n\n이름이 맞다면 y를 입력해주세요.\n> ");
+                    sequenceMessage("\n\n이름이 맞다면 y 키를 입력해주세요.\n> ");
                     String nextNameCheck = sc.nextLine();
                     if(nextNameCheck.equals("Y") || nextNameCheck.equals("y")) {
                         members.get(logInData).setName(dto.getName());
-                        moveMainWithMessage("\n이름이 성공적으로 변경되었습니다.");
+                        moveMainWithMessage("이름이 성공적으로 변경되었습니다.");
                         return;
                     }
-                    askMainWithMessage("\n개명하신 이름을 다시 입력해주세요.");
+                    askMainWithMessage("개명하신 이름을 다시 입력해주세요.");
                 }
             case "4":
                 sequenceMessage("\n이메일 변경을 시작합니다.");
                 wait1Sec();
                 initializeConsole();
-                sequenceMessage("\n현재 이메일을 입력해주세요.");
+                askMainWithMessage("현재 이메일을 입력해주세요.");
                 while(true) {
                     dto.setEmail(sc.nextLine());
                     if(dto.getEmail().equals("X") || dto.getEmail().equals("x")) {
@@ -306,12 +307,12 @@ public class DAO {
                         return;
                     }
                     if(!validEmail(dto.getEmail())) {
-                        askMainWithMessage("이메일을 형식에 맞게 다시 입력해주세요.\n> ");
+                        askMainWithMessage("이메일을 형식에 맞게 다시 입력해주세요.");
                         wait1Sec();
                         continue;
                     }
-                    if(!dto.getEmail().equals(members.get(logInData).getEmail())) break;
-                    sequenceMessage("\n현재 이메일과 동일합니다. 이메일을 다시 입력해주세요.\n> ");
+                    if(dto.getEmail().equals(members.get(logInData).getEmail())) break;
+                    askMainWithMessage2("입력하신 이메일이 현재 이메일과 일치하지 않습니다.", "현재 이메일을 다시 입력해주세요.");
                 }
                 sequenceMessage("\n변경하실 이메일을 입력해주세요.\n> ");
                 while(true) {
@@ -325,25 +326,29 @@ public class DAO {
                             askMainWithMessage("이메일을 형식에 맞게 다시 입력해주세요.");
                             continue;
                         }
+                        if(dto.getEmail().equals(members.get(logInData).getEmail())) {
+                            askMainWithMessage("현재 이메일과 동일합니다. 새로운 이메일을 입력해주세요.");
+                            continue;
+                        }
                         break;
                     }
-                    String printEmail = "\n입력하신 이메일은 \'" + dto.getEmail() + "입니다.";
+                    String printEmail = "\n입력하신 이메일은 \'" + dto.getEmail() + "\'입니다.";
                     sequenceMessage(printEmail);
                     wait05Sec();
-                    sequenceMessage("\n\n입력하신 이메일이 맞다면 y를 입력해주세요.\n> ");
+                    sequenceMessage("\n\n입력하신 이메일이 맞다면 y 키를 입력해주세요.\n> ");
                     String nextEmailCheck = sc.nextLine();
                     if(nextEmailCheck.equals("Y") || nextEmailCheck.equals("y")) {
                         members.get(logInData).setEmail(dto.getEmail());
-                        moveMainWithMessage("\n이메일이 성공적으로 변경되었습니다.");
+                        moveMainWithMessage("이메일이 성공적으로 변경되었습니다.");
                         return;
                     }
-                    askMainWithMessage("\n변경하실 이메일을 다시 입력해주세요.");
+                    askMainWithMessage("변경하실 이메일을 다시 입력해주세요.");
                 }
             case "5":
                 sequenceMessage("\n주소 변경을 시작합니다.");
                 wait1Sec();
                 initializeConsole();
-                askMainWithMessage("\n변경하실 주소를 입력해주세요.");
+                askMainWithMessage("변경하실 주소를 입력해주세요.");
                 while(true) {
                     while(true) {
                         dto.setAddress(sc.nextLine());
@@ -352,24 +357,24 @@ public class DAO {
                             return;
                         }
                         if(!validAddress(dto.getAddress())) {
-                            askMainWithMessage("\n정확한 주소를 다시 입력해주세요.");
+                            askMainWithMessage("정확한 주소를 다시 입력해주세요.");
                             wait1Sec();
                             continue;
                         }
                         if(!dto.getAddress().equals(members.get(logInData).getAddress())) break;
-                        askMainWithMessage("\n현재 주소와 동일합니다. 주소를 다시 입력해주세요.");
+                        askMainWithMessage("현재 주소와 동일합니다. 주소를 다시 입력해주세요.");
                     }
-                    String printAddress = "\n입력하신 주소는 \'" + dto.getAddress() + "입니다.";
+                    String printAddress = "\n입력하신 주소는 \'" + dto.getAddress() + "\'입니다.";
                     sequenceMessage(printAddress);
                     wait05Sec();
-                    sequenceMessage("\n\n주소가 맞다면 y를 입력해주세요.\n> ");
+                    sequenceMessage("\n\n주소가 맞다면 y 키를 입력해주세요.\n> ");
                     String addressCheck = sc.nextLine();
                     if(addressCheck.equals("Y") || addressCheck.equals("y")) {
                         members.get(logInData).setAddress(dto.getAddress());
-                        moveMainWithMessage("\n주소가 성공적으로 변경되었습니다.");
+                        moveMainWithMessage("주소가 성공적으로 변경되었습니다.");
                         return;
                     }
-                    askMainWithMessage("\n변경하실 주소를 다시 입력해주세요.");
+                    askMainWithMessage("변경하실 주소를 다시 입력해주세요.");
                 }
             case "X", "x":
                 moveMain();
@@ -416,7 +421,7 @@ public class DAO {
                 wait05Sec();
             }
             while(true) {
-                askMainWithMessage("\n다시 입력하시려면 y 키를 입력해주세요");
+                askMainWithMessage("\n다시 입력하시려면 y 키를 입력해주세요.");
                 String temp = sc.nextLine();
                 if(temp.equals("Y") || temp.equals("y")) {
                     initializeConsole();
@@ -439,8 +444,8 @@ public class DAO {
             wait1Sec();
             return;
         }
-        Scanner sc = new Scanner(System.in);
-        sequenceMessage("정말 탈퇴하시겠습니까?");
+        Scanner sc = new Scanner(System.in, "CP949");
+        sequenceMessage("\n정말 탈퇴하시겠습니까?");
         while(true) {
             wait05Sec();
             askMainWithMessage("\n회원탈퇴를 진행하시려면 y 키를 입력해주세요.");
@@ -454,7 +459,7 @@ public class DAO {
                 initializeConsole();
                 break;
             }
-            sequenceMessage("잘못된 값이 입력되었습니다.");
+            sequenceMessage("\n잘못된 값이 입력되었습니다.");
         }
 
         DTO dto = new DTO();
@@ -482,6 +487,7 @@ public class DAO {
         for(int i=0; i<3; i++) {
             askMainWithMessage("회원탈퇴를 원하시면 \"회원탈퇴\"를 입력해주세요.");
             String withdrawCheck = sc.nextLine();
+            String failureInputMessage = "\n" + (i+1) + "번 입력 실패하였습니다. 3번 입력 실패 시 메인 화면으로 이동합니다.";
             if (withdrawCheck.equals("회원탈퇴")) {
                 members.remove(logInData);
                 logInData = -1;
@@ -492,14 +498,13 @@ public class DAO {
                 moveMain();
                 return;
             } else if (i == 2) {
-                System.out.printf("\n%d번 입력 실패하였습니다.", i+1);
+                sequenceMessage(i+1 + "번 입력 실패하셨습니다." + "\n");
                 wait05Sec();
                 break;
             }
-            System.out.printf("\n%d번 입력 실패하였습니다.", i+1);
+            sequenceMessage(failureInputMessage);
             wait05Sec();
-            System.out.print("\n\n3번 입력 실패 시 메인 화면으로 이동합니다.");
-            wait05Sec();
+            System.out.println();
         }
         moveMain();
     }
@@ -509,7 +514,7 @@ public class DAO {
     // 프로그램 종료
     void exit() throws InterruptedException, IOException {
         saveMembers();
-        saveMembersToCsv();
+        // saveMembersToCsv();
         sequenceMessage("\n프로그램을 종료합니다.");
         wait1Sec();
         initializeConsole();
@@ -576,6 +581,7 @@ public class DAO {
             wait05Sec();
             askMainWithMessage("\n비밀번호는 8자 이상이어야 하며, 대소문자와 특수문자, 숫자를 각각 하나 이상 포함해야 합니다.");
             dto.setPassword(sc.nextLine());
+            initializeConsole();
             if(dto.getPassword().equals("X") || dto.getPassword().equals("x")) {
                 moveMain();
                 return "";
@@ -585,13 +591,14 @@ public class DAO {
             }
             sequenceMessage("\n비밀번호를 한번 더 입력하세요.\n> ");
             String confirmPassword = sc.nextLine();
+            initializeConsole();
             if(!confirmPassword.equals(dto.getPassword())) {
                 sequenceMessage("\n비밀번호가 일치하지 않습니다. 다시 입력하세요.");
                 continue;
             }
             break;
         }
-        sequenceMessage("\n비밀번호가 확인되었습니다.");
+        sequenceMessage("비밀번호가 확인되었습니다.");
         wait1Sec();
         initializeConsole();
         return dto.getPassword();
@@ -641,7 +648,6 @@ public class DAO {
         for (int i = 0; i < dateList.length; i++) {
             if (Integer.parseInt(birth) - 1 == i) checkDate = Integer.parseInt(date) <= dateList[i];
         }
-        System.out.println(checkBirth + "" + checkDate);
         return checkBirth && checkDate;
     }
 
@@ -671,9 +677,7 @@ public class DAO {
 
     private String signUpEmail() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
-        sequenceMessage("\n이메일을 입력하세요.");
-        wait05Sec();
-        askMainWithMessage("\n\n이메일의 ID는 4자 이상, 20자 이하여야 합니다.");
+        askMainWithMessage2("\n이메일을 입력하세요.", "이메일의 ID는 4자 이상, 20자 이하여야 합니다.");
         String inputEmail = sc.nextLine();
         while(true) {
             if(inputEmail.equals("X") || inputEmail.equals("x")) {
@@ -694,7 +698,7 @@ public class DAO {
             } else if (!validEmail(inputEmail)) {
                 sequenceMessage("\n이메일을 다시 입력하세요.");    
                 wait05Sec();
-                askMainWithMessage("\n\n이메일의 ID는 4자 이상, 20자 이하여야 합니다.");
+                askMainWithMessage("\n이메일의 ID는 4자 이상, 20자 이하여야 합니다.");
                 inputEmail = sc.nextLine();
                 continue;
             }
@@ -721,7 +725,7 @@ public class DAO {
                 return "";
             }
             if(validAddress(inputAddress)) break;
-            askMainWithMessage("\n주소를 다시 입력하세요.");
+            askMainWithMessage("주소를 다시 입력하세요.");
             inputAddress = sc.nextLine();
         }
         return inputAddress;
@@ -833,16 +837,16 @@ public class DAO {
     }
 
     
-    // csv 파일 저장
-    public void saveMembersToCsv() throws IOException {
-        try (FileOutputStream fos = new FileOutputStream("members.csv")) {
-            for(DTO member : members) {
-                    fos.write((member + "\n").getBytes());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    // // csv 파일 저장
+    // public void saveMembersToCsv() throws IOException {
+    //     try (FileOutputStream fos = new FileOutputStream("members.csv")) {
+    //         for(DTO member : members) {
+    //                 fos.write((member + "\n").getBytes());
+    //         }
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
 
     // dat 파일 로드
