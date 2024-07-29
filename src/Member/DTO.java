@@ -1,10 +1,7 @@
 package Member;
 
-import java.io.Serializable;
-
-class DTO implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private String ID;
+class DTO {
+    private String id;
     private String password;
     private String name;
     private String birthDate;
@@ -13,8 +10,8 @@ class DTO implements Serializable {
 
 
     // setter 선언
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setPassword(String password) { this.password = password; }
@@ -37,8 +34,8 @@ class DTO implements Serializable {
 
 
     // getter 선언
-    public String getID() {
-        return this.ID;
+    public String getId() {
+        return this.id;
     }
 
     public String getPassword() { return this.password; }
