@@ -1,4 +1,4 @@
-package Member;
+package member;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -479,19 +479,16 @@ public class DAO {
 
     // 출력
     void print() throws InterruptedException, SQLException, IOException, ClassNotFoundException {
-        if (members.isEmpty()) {
+        Class.forName(driver);
+        con = DriverManager.getConnection(url, "mini", "2417");
+        sql = "SELECT COUNT(*) FROM mini";
+        pstmt = con.prepareStatement(sql);
+        rs = pstmt.executeQuery();
+        if (!rs.next()) {
             sequenceMessage("\n출력할 데이터가 없습니다.");
             wait1Sec();
             return;
         }
-        
-        Class.forName(driver);
-        con = DriverManager.getConnection(url, "mini", "2417");
-        sql = "SELECT birth WHERE id=?";
-        pstmt = con.prepareStatement(sql);
-        pstmt.setString(1, logInData);
-        rs = pstmt.executeQuery();
-        String dbBirth = rs.getString("birth");
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String inputIDCheck;
@@ -502,7 +499,13 @@ public class DAO {
             System.out.print("> ");
             inputBirthCheck = br.readLine();
 
-            if (inputIDCheck.equals(logInData) && inputBirthCheck.equals(dbBirth)) {
+            sql = "SELECT birth WHERE id=?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, inputIDCheck);
+            rs = pstmt.executeQuery();
+            String dbBirth = rs.getString("birth");
+
+            if (inputBirthCheck.equals(dbBirth)) {
                 sql = "SELECT id,name,birth,email,address FROM mini WHERE id=?";
                 pstmt = con.prepareStatement(sql);
                 pstmt.setString(1, logInData);

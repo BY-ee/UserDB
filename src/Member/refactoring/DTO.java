@@ -1,4 +1,4 @@
-package member;
+package member.refactoring;
 
 class DTO {
     private String id;
