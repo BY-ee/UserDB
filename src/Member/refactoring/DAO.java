@@ -6,7 +6,7 @@ import java.util.regex.*;
 
 public class DAO {
     List<DTO> members = new ArrayList<>();
-    private String logInData = null;
+    private String[] logInData = new String[5];
     String driver = "oracle.jdbc.driver.OracleDriver";
     String url = "jdbc:oracle:thin:@localhost:1521:xe";
 
@@ -19,7 +19,7 @@ public class DAO {
     // 메뉴
     void menu() {
         initializeConsole();
-        System.out.println("===================메뉴====================");
+        System.out.println("\n===================메뉴====================");
         System.out.println("1.회원가입\t 2.로그인\t 3.로그아웃");
         System.out.println("4.정보 변경\t 5.출력\t\t 6.회원탈퇴");
         System.out.println("0.프로그램 종료");
@@ -98,7 +98,7 @@ public class DAO {
                         break;
                     }
                 } else {
-                    faultValue();
+                    inputFaultValue();
                     isRepeated = true;
                 }
             } while(isRepeated);
@@ -136,15 +136,25 @@ public class DAO {
 
                 Class.forName(driver);
                 con = DriverManager.getConnection(url, "mini", "2417");
-                sql = "SELECT password FROM mini WHERE id=?";
+                sql = "SELECT * FROM mini WHERE id=?";
                 pstmt = con.prepareStatement(sql);
                 pstmt.setString(1, logInId);
                 rs = pstmt.executeQuery();
                 if(rs.next()) {
+                    String dbId = rs.getString("id");
                     String dbPassword = rs.getString("password");
+                    String dbName = rs.getString("name");
+                    String dbBirth = rs.getString("birth");
+                    String dbEmail = rs.getString("email");
+                    String dbAddress = rs.getString("address");
+
                     if(dbPassword.equals(logInPassword)) {
                         sequenceMessage("\n로그인에 성공하였습니다.");
-                        logInData = logInId;
+                        logInData[0] = dbId;
+                        logInData[1] = dbName;
+                        logInData[2] = dbBirth;
+                        logInData[3] = dbEmail;
+                        logInData[4] = dbAddress;
                         wait1Sec();
                         initializeConsole();
                         break;
@@ -192,7 +202,7 @@ public class DAO {
                     wait1Sec();
                     initializeConsole();
                 } else {
-                    faultValue();
+                    inputFaultValue();
                     isRepeated = true;
                 }
             } while(isRepeated);
@@ -200,6 +210,182 @@ public class DAO {
             e.printStackTrace();
         }
     }
+
+
+    // 정보 변경
+    void change() {
+        if(logInData == null) {
+            sequenceMessage("\n로그인 후에 다시 시도해주세요.");
+            wait1Sec();
+            return;
+        }
+
+        initializeConsole();
+        System.out.print("\n\n\n================================================");
+        System.out.print("\n1.아이디   2.비밀번호   3.이름   4.이메일   5.주소");
+        System.out.print("\n================================================\n\n\n");
+        askMainWithMessage("변경하실 정보의 번호를 입력해주세요.");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String select = null;
+        try {select = br.readLine();} catch (IOException e) {e.printStackTrace();}
+        
+        switch (select) {
+            case "1":
+                changeId();
+                break;
+            case "2":
+                changePassword();
+                break;
+            case "3":
+                changeName();
+                break;
+            case "4":
+                changeEmail();
+                break;
+            case "5":
+                changeAddress();
+                break;
+            default:
+                inputFaultValue();
+        }
+    }
+
+
+    // 아이디 변경
+    private void changeId() {
+        sequenceMessage("\n아이디 변경을 시작합니다.");
+        wait05Sec();
+        initializeConsole();
+
+        askMainWithMessage("현재 아이디를 입력해주세요.");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String currentId = null;
+        boolean isRepeated;
+        do {
+            isRepeated = false;
+            try {
+                currentId = br.readLine();
+                if(isX(currentId)) {
+                    moveMain();
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(!logInData[0].equals(currentId)) {
+                askMainWithMessage("\n아이디가 일치하지 않습니다. 다시 입력해주세요.\n> ");
+                isRepeated = true;
+            }
+        } while(isRepeated);
+
+        String newId = null;
+        askMainWithMessage("\n변경하실 아이디를 입력하세요.");
+        do {
+            try {newId = br.readLine();} catch (IOException e) {e.printStackTrace();}
+
+            if(isX(newId)) {
+                moveMain();
+                return;
+            } else if(currentId.equals(newId)) {
+                askMainWithMessage("\n현재 아이디와 동일합니다. 다시 입력하세요.\n> ");
+                continue;
+            } else if(isExistId(newId)) {
+                askMainWithMessage("\n이미 존재하는 아이디입니다. 다시 입력하세요.\n> ");
+                continue;
+            }
+            
+            askMainWithMessage("\n변경하실 아이디를 한번 더 입력하세요.");
+            isRepeated = false;
+
+            try {newId = br.readLine();} catch (IOException e) {e.printStackTrace();}
+
+            if(isX(newId)) {
+                moveMain();
+                return;
+            } else if(currentId.equals(newId)) {
+                askMainWithMessage("\n아이디가 일치하지 않습니다. 변경하실 아이디를 다시 입력하세요.\n> ");
+                isRepeated = true;
+            }
+        } while(isRepeated);
+
+        if(updateIdInDB(newId)) {
+            sequenceMessage("\n아이디가 성공적으로 변경되었습니다.");
+            logInData[0] = newId;
+            wait1Sec();
+            initializeConsole();
+        } else {
+            sequenceMessage("\n아이디 변경에 실패하였습니다.");
+            wait1Sec();
+            initializeConsole();
+        }
+    }
+
+    // 비밀번호 변경
+    private void changePassword() {
+    }
+
+    // 이름 변경
+    private void changeName() {
+    }
+
+    // 이메일 변경
+    private void changeEmail() {
+    }
+
+    // 주소 변경
+    private void changeAddress() {
+    }
+
+
+    // 아이디 존재 여부 확인
+    private boolean isExistId(String inputId) {
+        try {
+            Class.forName(driver);
+            con = DriverManager.getConnection(url, "mini", "2417");
+
+            sql = "SELECT * FROM mini WHERE id=?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, inputId);
+            rs = pstmt.executeQuery();
+            return rs.next();    
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (con!= null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    // DB 아이디 업데이트
+    private boolean updateIdInDB(String newId) {
+        try {
+            Class.forName(driver);
+            con = DriverManager.getConnection(url, "mini", "2417");
+
+            sql = "UPDATE mini SET id=? WHERE id=?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, newId);
+            pstmt.setString(2, logInData[0]);
+            int result = pstmt.executeUpdate();
+            return (result == 1);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (pstmt!= null) pstmt.close();
+                if (con!= null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
 
     // 출력
@@ -217,7 +403,7 @@ public class DAO {
         
         try {
             isRepeated = false;
-            askMainWithMessage("ID를 입력하세요.");
+            askMainWithMessage("아이디를 입력하세요.");
             checkId = br.readLine();
             if(isX(checkId)) {
                 moveMain();
@@ -274,9 +460,15 @@ public class DAO {
 
 
 
+    // 프로그램 종료
+    void exit() {
+        System.out.println("\n프로그램을 종료합니다.");
+        wait1Sec();
+        System.exit(0);
+    }
 
     // 잘못된 값 입력
-    void faultValue() {
+    void inputFaultValue() {
         sequenceMessage("\n잘못된 값이 입력되었습니다.\n");
         wait05Sec();
     }
@@ -462,7 +654,7 @@ public class DAO {
         String inputEmail;
         boolean checkedEmail;
         boolean duplicateEmail;
-        askMainWithMessage2("이메일을 입력하세요.", "이메일의 ID는 6자 이상, 20자 이하여야 합니다.");
+        askMainWithMessage2("이메일을 입력하세요.", "이메일의 아이디는 6자 이상, 20자 이하여야 합니다.");
 
         do {
             inputEmail = br.readLine();

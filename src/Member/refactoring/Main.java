@@ -14,9 +14,10 @@ public class Main {
                     case "1": dao.signUp(); break;
                     case "2": dao.logIn(); break;
                     case "3": dao.logOut(); break;
+                    case "4": dao.change(); break;
                     case "5": dao.print(); break;
-                    case "0": System.exit(0); break;
-                    default: dao.faultValue();
+                    case "0": dao.exit(); break;
+                    default: dao.inputFaultValue();
                 }
             } catch(IOException e) {
                 e.printStackTrace();
