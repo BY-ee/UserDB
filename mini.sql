@@ -8,9 +8,11 @@ CREATE TABLE mini(
     address VARCHAR2(30) NOT NULL,
     rec_date TIMESTAMP);
 
-CREATE SEQUENCE mini_no
+CREATE SEQUENCE mini_seq
 START WITH 1
 INCREMENT BY 1;
+
+DROP SEQUENCE mini_no;
 
 DELETE FROM mini;
 

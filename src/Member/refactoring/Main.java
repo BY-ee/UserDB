@@ -12,12 +12,16 @@ public class Main {
                 String select = br.readLine();
                 switch(select) {
                     case "1": dao.signUp(); break;
-                    
+                    case "2": dao.logIn(); break;
+                    case "3": dao.logOut(); break;
+                    case "5": dao.print(); break;
+                    case "0": System.exit(0); break;
+                    default: dao.faultValue();
                 }
             } catch(IOException e) {
                 e.printStackTrace();
             } catch(InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }

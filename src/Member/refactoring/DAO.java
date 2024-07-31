@@ -24,7 +24,7 @@ public class DAO {
         System.out.println("4.정보 변경\t 5.출력\t\t 6.회원탈퇴");
         System.out.println("0.프로그램 종료");
         System.out.println("===========================================\n\n\n");
-        System.out.print("번호를 입력해주세요.\n> ");
+        System.out.print("원하시는 메뉴의 번호를 입력하세요.\n> ");
     }
 
 
@@ -32,7 +32,7 @@ public class DAO {
     void signUp() throws InterruptedException {
         if(logInData != null) {
             logInData = null;
-            sequenceMessage("\n자동 로그아웃되었습니다.");
+            sequenceMessage("\n자동으로 로그아웃되었습니다.");
             wait1Sec();
             initializeConsole();
         }
@@ -42,26 +42,244 @@ public class DAO {
         wait1Sec();
         initializeConsole();
 
-        while(true) {
+        try {
+            String signUpId = signUpId();
+            if(signUpId.isEmpty()) return;
+            String signUpPassword = signUpPassword();
+            if(signUpPassword.isEmpty()) return;
+            String signUpName = signUpName();
+            if(signUpName.isEmpty()) return;
+            String signUpBirthDate = signUpBirthDate();
+            if(signUpBirthDate.isEmpty()) return;
+            String signUpEmail = signUpEmail();
+            if(signUpEmail.isEmpty()) return;
+            String signUpAddress = signUpAddress();
+            if(signUpAddress.isEmpty()) return;
+            
+            System.out.println("\n============================");
+            System.out.println(" 아이디: " + signUpId);
+            System.out.println(" 이름: " + signUpName);
+            System.out.println(" 생년월일: " + signUpBirthDate);
+            System.out.println(" E-mail: " + signUpEmail);
+            System.out.println(" 주소: " + signUpAddress);
+            System.out.println("============================");
+
+            boolean isRepeated;
+            do {
+                isRepeated = false;
+                askMainWithMessage("입력하신 정보가 맞으면 y를 입력하세요.");
+                String xyCheck = br.readLine();
+                if(isX(xyCheck)) {
+                    moveMain();
+                    break;
+                } else if(xyCheck.equalsIgnoreCase("y")) {
+                    Class.forName(driver);
+                    con = DriverManager.getConnection(url, "mini", "2417");
+
+                    sql = "INSERT INTO mini VALUES (mini_seq.NEXTVAL,?,?,?,?,?,?,sysdate)";
+                    pstmt = con.prepareStatement(sql);
+                    pstmt.setString(1, signUpId);
+                    pstmt.setString(2, signUpPassword);
+                    pstmt.setString(3, signUpName);
+                    pstmt.setString(4, signUpBirthDate);
+                    pstmt.setString(5, signUpEmail);
+                    pstmt.setString(6, signUpAddress);
+
+                    int result = pstmt.executeUpdate();
+                    if(result == 1) {
+                        sequenceMessage("\n회원가입이 완료되었습니다.");
+                        wait1Sec();
+                        initializeConsole();
+                        break;
+                    } else {
+                        sequenceMessage("\n회원가입 실패");
+                        wait1Sec();
+                        initializeConsole();
+                        break;
+                    }
+                } else {
+                    faultValue();
+                    isRepeated = true;
+                }
+            } while(isRepeated);
+        } catch (IOException | SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
             try {
-                String signUpId = signUpId();
-                String signUpPassword = signUpPassword();
-                String signUpName = signUpName();
-                String signUpBirthDate = signUpBirthDate();
-                String signUpEmail = signUpEmail();
-                String signUpAddress = signUpAddress();
-                return;
-            } catch (IOException e) {
+                if (pstmt!= null) pstmt.close();
+                if (con!= null) con.close();
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+    }
 
+    
+    // 로그인
+    void logIn() {
+        if(logInData!= null) {
+            sequenceMessage("\n이미 '" + logInData + "' 아이디로 로그인되어 있습니다.");
+            wait1Sec();
+            return;
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        askMainWithMessage("아이디를 입력하세요.");
+        while(true) {
+            try {
+                String logInId = br.readLine();
+                if(isX(logInId)) break;
+
+                askMainWithMessage("비밀번호를 입력하세요");
+                String logInPassword = br.readLine();
+                if(isX(logInPassword)) break;
+
+                Class.forName(driver);
+                con = DriverManager.getConnection(url, "mini", "2417");
+                sql = "SELECT password FROM mini WHERE id=?";
+                pstmt = con.prepareStatement(sql);
+                pstmt.setString(1, logInId);
+                rs = pstmt.executeQuery();
+                if(rs.next()) {
+                    String dbPassword = rs.getString("password");
+                    if(dbPassword.equals(logInPassword)) {
+                        sequenceMessage("\n로그인에 성공하였습니다.");
+                        logInData = logInId;
+                        wait1Sec();
+                        initializeConsole();
+                        break;
+                    }
+                }
+                askMainWithMessage("로그인에 실패하였습니다. 아이디를 다시 입력하세요.");
+                wait1Sec();
+                initializeConsole();
+            } catch (IOException | SQLException | ClassNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (rs!= null) rs.close();
+                    if (pstmt!= null) pstmt.close();
+                    if (con!= null) con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    // 로그아웃
+    void logOut() {
+        if(logInData == null) {
+            sequenceMessage("\n이미 로그아웃된 상태입니다.");
+            wait1Sec();
+            return;
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        boolean isRepeated;
+        try {
+            do {
+                isRepeated = false;
+                askMainWithMessage("로그아웃하시려면 y를 입력하세요.");
+                String logOutCheck = br.readLine();
+                if(isX(logOutCheck)) {
+                    moveMain();
+                    initializeConsole();
+                } else if(logOutCheck.equalsIgnoreCase("y")) {
+                    sequenceMessage("\n정상적으로 로그아웃되었습니다.");
+                    logInData = null;
+                    wait1Sec();
+                    initializeConsole();
+                } else {
+                    faultValue();
+                    isRepeated = true;
+                }
+            } while(isRepeated);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // 출력
+    void print() {
+        if(logInData == null) {
+            sequenceMessage("\n로그인 후에 다시 시도해주세요.");
+            wait1Sec();
+            return;
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String checkId;
+        String checkPassword;
+        boolean isRepeated;
+        
+        try {
+            isRepeated = false;
+            askMainWithMessage("ID를 입력하세요.");
+            checkId = br.readLine();
+            if(isX(checkId)) {
+                moveMain();
+                return;
+            }
+
+            askMainWithMessage("비밀번호를 입력하세요.");
+            checkPassword = br.readLine();
+            if(isX(checkPassword)) {
+                moveMain();
+                return;
+            }
+
+            Class.forName(driver);
+            con = DriverManager.getConnection(url, "mini", "2417");
+            sql = "SELECT * FROM mini WHERE id=?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, checkId);
+            rs = pstmt.executeQuery();
+            if(rs.next()) {
+                String dbPassword = rs.getString("password");
+                initializeConsole();
+                if(dbPassword.equals(checkPassword)) {
+                    wait05Sec();
+                    System.out.println("\n============================");
+                    System.out.println(" 아이디: " + rs.getString("id"));
+                    System.out.println(" 이름: " + rs.getString("name"));
+                    System.out.println(" 생년월일: " + rs.getString("birth"));
+                    System.out.println(" E-mail: " + rs.getString("email"));
+                    System.out.println(" 주소: " + rs.getString("address"));
+                    System.out.println("============================\n");
+                } else {
+                    sequenceMessage("현재 계정 정보와 일치하지 않습니다.");
+                }
+            } else {
+                sequenceMessage("현재 계정 정보와 일치하지 않습니다.");
+            }
+            sequenceMessage("\n\n메인 화면으로 이동하시려면 아무 키나 입력하세요. ");
+            br.readLine();
+            moveMain();
+        } catch (IOException | SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs!= null) rs.close();
+                if (pstmt!= null) pstmt.close();
+                if (con!= null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
 
 
 
+    // 잘못된 값 입력
+    void faultValue() {
+        sequenceMessage("\n잘못된 값이 입력되었습니다.\n");
+        wait05Sec();
+    }
 
     // 아이디 유효성 검사
     private boolean isValidId(String inputId) {
@@ -74,18 +292,19 @@ public class DAO {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String inputId;
         boolean checkedId;
-        askMainWithMessage2("6자 이상, 20자 이하의 아이디를 입력하세요.", "알파벳과 숫자, _만 입력 가능합니다.");
+        boolean duplicateId;
+        askMainWithMessage2("6자 이상, 20자 이하의 아이디를 입력하세요.", "알파벳과 숫자, 일부 특수문자(_-.)만 입력 가능합니다.");
 
         do {
             inputId = br.readLine();
             checkedId = isValidId(inputId);
-            boolean duplicateId = false;
+            duplicateId = false;
 
             if(inputId.equals("X") || inputId.equals("x")) {
                 moveMain();
                 return "";
             } else if (!checkedId) {
-                askMainWithMessage2("6자 이상, 20자 이하의 아이디를 다시 입력하세요.", "알파벳과 숫자, _만 입력 가능합니다.");
+                askMainWithMessage2("6자 이상, 20자 이하의 아이디를 다시 입력하세요.", "알파벳과 숫자, 일부 특수문자(_-.)만 입력 가능합니다.");
             } else {
                 try {
                     Class.forName(driver);
@@ -102,7 +321,7 @@ public class DAO {
                     }
 
                     if(duplicateId) {
-                        askMainWithMessage2("중복된 아이디입니다. 다시 입력하세요.", "4자 이상, 20자 이하의 아이디를 입력하세요.");
+                        askMainWithMessage("중복된 아이디입니다. 다시 입력하세요.");
                     }
                 } catch (ClassNotFoundException | SQLException e) {
                     e.printStackTrace();
@@ -112,7 +331,7 @@ public class DAO {
                     if(con!= null) try {con.close();} catch (SQLException e) {e.printStackTrace();}
                 }
             }
-        } while(!checkedId);
+        } while(!checkedId || duplicateId);
         return inputId;
     }
 
@@ -127,8 +346,8 @@ public class DAO {
     private String signUpPassword() throws IOException, InterruptedException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String inputPassword;
-        boolean differPassword = false;
         boolean checkedPassword;
+        boolean differPassword = false;
         sequenceMessage("\n\n비밀번호를 입력하세요.");
 
         do {
@@ -146,6 +365,7 @@ public class DAO {
                 continue;
             }
 
+            differPassword = false;
             sequenceMessage("\n비밀번호를 한번 더 입력하세요.\n> ");
             String confirmPassword = br.readLine();
             initializeConsole();
@@ -198,7 +418,7 @@ public class DAO {
 
         String birth = inputBirthDate.substring(2, 4);
         if(birth.equals("00")) return false;
-        if(Integer.parseInt(birth) < 13) return false;
+        if(Integer.parseInt(birth) > 12) return false;
 
         String date = inputBirthDate.substring(4, 6);
         int[] dateList = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -217,7 +437,7 @@ public class DAO {
 
         do {
             inputBirthDate = br.readLine();
-            checkedBirthDate = isValidBirthDate(inputBirthDate) || verifyBirthDate(inputBirthDate);
+            checkedBirthDate = isValidBirthDate(inputBirthDate) && verifyBirthDate(inputBirthDate);
 
             if(inputBirthDate.equals("X") || inputBirthDate.equals("x")) {
                 moveMain();
@@ -232,7 +452,7 @@ public class DAO {
 
     // 이메일 유효성 검사
     private boolean isValidEmail(String inputEmail) {
-        Pattern patternEmail = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9_.-]{5,19}@[A-Za-z0-9-.]+\\.[a-z]+$");
+        Pattern patternEmail = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9_.-]{5,19}@([A-Za-z0-9-]+\\.){1,10}[a-z]+$");
         Matcher matcherEmail = patternEmail.matcher(inputEmail);
         return matcherEmail.matches();
     }
@@ -241,12 +461,13 @@ public class DAO {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String inputEmail;
         boolean checkedEmail;
+        boolean duplicateEmail;
         askMainWithMessage2("이메일을 입력하세요.", "이메일의 ID는 6자 이상, 20자 이하여야 합니다.");
 
         do {
             inputEmail = br.readLine();
             checkedEmail = isValidEmail(inputEmail);
-            boolean duplicateEmail = false;
+            duplicateEmail = false;
 
             if(inputEmail.equals("X") || inputEmail.equals("x")) {
                 moveMain();
@@ -279,7 +500,7 @@ public class DAO {
                     if(con!= null) try {con.close();} catch (SQLException e) {e.printStackTrace();}
                 }
             }
-        } while(!checkedEmail);
+        } while(!checkedEmail || duplicateEmail);
         return inputEmail;
     }
     
@@ -315,14 +536,22 @@ public class DAO {
 
 
     // 1초 대기
-    private void wait1Sec() throws InterruptedException {
-        // Thread.sleep(1000);
+    private void wait1Sec() {
+        // try {
+        //     Thread.sleep(1000);
+        // } catch (InterruptedException e) {
+        //     Thread.currentThread().interrupt();
+        // }
     }
 
 
     // 0.5초 대기
-    private void wait05Sec() throws InterruptedException {
-        // Thread.sleep(500);
+    private void wait05Sec() {
+        // try {
+        //     Thread.sleep(500);
+        // } catch (InterruptedException e) {
+        //     Thread.currentThread().interrupt();
+        // }
     }
 
 
@@ -335,23 +564,27 @@ public class DAO {
 
 
     // 순차 메시지
-    private void sequenceMessage(String Message) throws InterruptedException {
-        for(String s : Message.split("")) {
-            System.out.print(s);
-            // Thread.sleep(45);
-        }
+    private void sequenceMessage(String message) {
+        // try {
+            for(String s : message.split("")) {
+                System.out.print(s);
+                // Thread.sleep(45);
+            }
+        // } catch (InterruptedException e) {
+        //     Thread.currentThread().interrupt();
+        // }
     }
 
 
     // 메인 화면 이동 메시지 출력
-    private void moveMain() throws InterruptedException {
+    private void moveMain() {
         sequenceMessage("\n메인 화면으로 이동합니다.");
         // wait1Sec();
     }
 
 
     // 메시지 출력 후 메인 화면 이동 메시지 출력
-    private void moveMainWithMessage(String message) throws InterruptedException {
+    private void moveMainWithMessage(String message) {
         sequenceMessage("\n" + message);
         // wait05Sec();
         sequenceMessage("\n\n메인 화면으로 이동합니다.");
@@ -360,25 +593,31 @@ public class DAO {
 
 
     // 메인 화면 이동 여부를 확인하는 메시지 출력
-    private void askMain(String message) throws InterruptedException {
-        sequenceMessage("\n메인 화면으로 돌아가시려면 x 키를 입력해주세요.\n> ");
+    private void askMain() {
+        sequenceMessage("\n메인 화면으로 돌아가시려면 x를 입력하세요.\n> ");
     }
 
 
     // 메시지 출력 후 메인 화면 이동 여부를 확인하는 메시지 출력
-    private void askMainWithMessage(String message) throws InterruptedException {
+    private void askMainWithMessage(String message) {
         sequenceMessage("\n" + message);
         // wait05Sec();
-        sequenceMessage("\n\n메인 화면으로 돌아가시려면 x 키를 입력해주세요.\n> ");
+        sequenceMessage("\n\n메인 화면으로 돌아가시려면 x를 입력하세요.\n> ");
     }
 
 
     // 메시지 2개 출력 후 메인 화면 이동 여부를 확인하는 메시지 출력
-    private void askMainWithMessage2(String message1, String message2) throws InterruptedException {
+    private void askMainWithMessage2(String message1, String message2) {
         sequenceMessage("\n" + message1);
         // wait05Sec();
         sequenceMessage("\n\n" + message2);
         // wait05Sec();
-        sequenceMessage("\n\n메인 화면으로 돌아가시려면 x 키를 입력해주세요.\n> ");
+        sequenceMessage("\n\n메인 화면으로 돌아가시려면 x를 입력하세요.\n> ");
+    }
+
+
+    // x, X를 입력하면 main 이동 메시지를 출력하고 true를 반환하는 메소드
+    private boolean isX(String input) {
+        return input.equalsIgnoreCase("x");
     }
 }
