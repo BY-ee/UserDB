@@ -1,6 +1,6 @@
 package member.refactoring;
 
-class DTO {
+class UserDTO {
     private String id;
     private String password;
     private String name;

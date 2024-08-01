@@ -4,20 +4,20 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        DAO dao = new DAO();
+        UserRepository ur = new UserRepository();
 
         while(true) {
-            dao.menu();
+            ur.menu();
             try {
                 String select = br.readLine();
                 switch(select) {
-                    case "1": dao.signUp(); break;
-                    case "2": dao.logIn(); break;
-                    case "3": dao.logOut(); break;
-                    case "4": dao.change(); break;
-                    case "5": dao.print(); break;
-                    case "0": dao.exit(); break;
-                    default: dao.inputFaultValue();
+                    case "1": ur.signUp(); break;
+                    case "2": ur.logIn(); break;
+                    case "3": ur.logOut(); break;
+                    case "4": ur.change(); break;
+                    case "5": ur.print(); break;
+                    case "0": ur.exit(); break;
+                    default: ur.inputFaultValue();
                 }
             } catch(IOException e) {
                 e.printStackTrace();

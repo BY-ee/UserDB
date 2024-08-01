@@ -1,4 +1,4 @@
-CREATE TABLE mini(
+CREATE TABLE user_info(
     no NUMBER(4) NOT NULL PRIMARY KEY,
     id VARCHAR2(20) UNIQUE NOT NULL,
     password VARCHAR2(20) NOT NULL,
@@ -8,12 +8,13 @@ CREATE TABLE mini(
     address VARCHAR2(30) NOT NULL,
     rec_date TIMESTAMP);
 
-CREATE SEQUENCE mini_seq
+CREATE SEQUENCE user_info_seq
 START WITH 1
 INCREMENT BY 1;
 
-DROP SEQUENCE mini_no;
+DELETE FROM user_info;
 
-DELETE FROM mini;
+SELECT * FROM user_info;
 
-SELECT * FROM mini;
+RENAME mini TO user_info;
+RENAME mini_seq TO user_info_seq;
