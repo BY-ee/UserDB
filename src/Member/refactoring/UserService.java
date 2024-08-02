@@ -30,7 +30,7 @@ public class UserService {
 
 
     // 회원가입
-    void signUp() throws InterruptedException {
+    void signUp() {
         if(logInData!= -1) {
             logInData = -1;
             sequenceMessage("\n자동으로 로그아웃되었습니다.");
@@ -50,8 +50,8 @@ public class UserService {
             if(signUpPassword.isEmpty()) return;
             String signUpName = signUpName();
             if(signUpName.isEmpty()) return;
-            String signUpBirthDate = signUpBirthDate();
-            if(signUpBirthDate.isEmpty()) return;
+            String signUpBirth = signUpBirth();
+            if(signUpBirth.isEmpty()) return;
             String signUpEmail = signUpEmail();
             if(signUpEmail.isEmpty()) return;
             String signUpAddress = signUpAddress();
@@ -60,7 +60,7 @@ public class UserService {
             System.out.println("\n============================");
             System.out.println(" 아이디: " + signUpId);
             System.out.println(" 이름: " + signUpName);
-            System.out.println(" 생년월일: " + signUpBirthDate);
+            System.out.println(" 생년월일: " + signUpBirth);
             System.out.println(" E-mail: " + signUpEmail);
             System.out.println(" 주소: " + signUpAddress);
             System.out.println("============================");
@@ -75,14 +75,14 @@ public class UserService {
                     break;
                 } else if(xyCheck.equalsIgnoreCase("y")) {
                     Class.forName(DRIVER);
-                    con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+                    con = DriverManager.getConnection(URL, USER, PASSWORD);
 
                     sql = "INSERT INTO user_info VALUES (user_info_seq.NEXTVAL,?,?,?,?,?,?,sysdate)";
                     pstmt = con.prepareStatement(sql);
                     pstmt.setString(1, signUpId);
                     pstmt.setString(2, signUpPassword);
                     pstmt.setString(3, signUpName);
-                    pstmt.setString(4, signUpBirthDate);
+                    pstmt.setString(4, signUpBirth);
                     pstmt.setString(5, signUpEmail);
                     pstmt.setString(6, signUpAddress);
 
@@ -136,7 +136,7 @@ public class UserService {
                 if(isX(logInPassword)) break;
 
                 Class.forName(DRIVER);
-                con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+                con = DriverManager.getConnection(URL, USER, PASSWORD);
                 sql = "SELECT * FROM user_info WHERE id=?";
                 pstmt = con.prepareStatement(sql);
                 pstmt.setString(1, logInId);
@@ -257,7 +257,7 @@ public class UserService {
         String currentId = null;
         boolean isRepeated = true;
 
-        askMainWithMessage("현재 아이디를 입력해주세요.");
+        askMainWithMessage("현재 아이디를 입력하세요.");
         while(isRepeated) {
             isRepeated = false;
             try {
@@ -582,7 +582,7 @@ public class UserService {
     private boolean isExistId(String inputId) {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "SELECT * FROM user_info WHERE id=?";
             pstmt = con.prepareStatement(sql);
@@ -606,7 +606,7 @@ public class UserService {
     private boolean updateIdInDB(String newId) {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "UPDATE user_info SET id=? WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -635,7 +635,7 @@ public class UserService {
     private boolean updatePasswordInDB(String newPassword) {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "UPDATE user_info SET password=? WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -661,7 +661,7 @@ public class UserService {
     private boolean updateNameInDB(String newName) {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "UPDATE user_info SET name=? WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -687,7 +687,7 @@ public class UserService {
     private boolean updateEmailInDB(String newEmail) {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "UPDATE user_info SET email=? WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -713,7 +713,7 @@ public class UserService {
     private boolean updateAddressInDB(String newAddress) {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "UPDATE user_info SET address=? WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -763,7 +763,7 @@ public class UserService {
             }
 
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
             sql = "SELECT * FROM user_info WHERE id=?";
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, checkId);
@@ -805,8 +805,129 @@ public class UserService {
 
     // 회원탈퇴
     void withdrawal() {
-        
+        if(logInData == -1) {
+            sequenceMessage("\n로그인 후에 다시 시도해주세요.");
+            wait1Sec();
+            return;
+        }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        boolean isRepeated;
+        String xyCheck = null;
+        do {
+            isRepeated = true;
+            askMainWithMessage("회원탈퇴를 진행하시려면 y를 입력하세요");
+            try{ xyCheck = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
+            if(isX(xyCheck)) {
+                moveMain();
+                return;
+            } else if(xyCheck.equalsIgnoreCase("y")) {
+                sequenceMessage("\n회원탈퇴를 시작합니다.");
+                wait1Sec();
+                initializeConsole();
+                isRepeated = false;
+            } else {
+                sequenceMessage("\n잘못된 값이 입력되었습니다.\n");
+            }
+        } while (isRepeated);
+
+        String currentId = null;
+        askMainWithMessage("현재 아이디를 입력하세요.");
+        while(isRepeated) {
+            isRepeated = false;
+            try {
+                currentId = br.readLine();
+                if(isX(currentId)) {
+                    moveMain();
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(!selectIdFromDB().equals(currentId)) {
+                askMainWithMessage("\n아이디가 일치하지 않습니다. 다시 입력하세요.");
+                isRepeated = true;
+            }
+        }
+
+        String currentPassword = null;
+        String currentPasswordCheck = null;
+        askMainWithMessage("현재 비밀번호를 입력하세요.");
+        while(isRepeated) {
+            isRepeated = false;
+            try {
+                currentPassword = br.readLine();
+                if(isX(currentPassword)) {
+                    moveMain();
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(!selectPasswordFromDB().equals(currentPassword)) {
+                askMainWithMessage("\n현재 비밀번호와 일치하지 않습니다. 다시 입력하세요.");
+                isRepeated = true;
+            }
+            if(isRepeated) continue;
+            
+            askMainWithMessage("\n비밀번호를 한번 더 입력하세요.");
+            try {
+                currentPasswordCheck = br.readLine();
+                if(isX(currentPasswordCheck)) {
+                    moveMain();
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(!currentPassword.equals(currentPasswordCheck)) {
+                askMainWithMessage("\n비밀번호가 일치하지 않습니다. 다시 입력하세요.");
+                isRepeated = true;
+            }
+        }
+
+        String withdrawalCheck = null;
+        while(isRepeated) {
+            askMainWithMessage("탈퇴하시려면 \'회원탈퇴\'를 입력하세요. 삭제된 정보는 복구할 수 없습니다.");
+            isRepeated = false;
+            try { withdrawalCheck = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
+            if(isX(withdrawalCheck)) {
+                moveMain();
+                return;
+            } else if(!withdrawalCheck.equalsIgnoreCase("회원탈퇴")) {
+                askMainWithMessage("\n잘못된 값이 입력되었습니다.");
+                isRepeated = true;
+            }
+        }
+
+        try {
+            Class.forName(DRIVER);
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
+
+            sql = "DELETE FROM user_info WHERE no=?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, logInData);
+            int result = pstmt.executeUpdate();
+            if(result == 1) {
+                sequenceMessage("\n회원탈퇴가 성공하였습니다.");
+                logInData = -1;
+            } else {
+                sequenceMessage("\n회원탈퇴에 실패하였습니다.");
+            }
+            wait1Sec();
+            moveMain();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt!= null) pstmt.close();
+                if (con!= null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
 
 
@@ -830,27 +951,27 @@ public class UserService {
         return matcherId.matches();
     }
 
-    private String signUpId() throws IOException, InterruptedException {
+    private String signUpId() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String inputId;
-        boolean checkedId;
-        boolean duplicateId;
+        String inputId = null;
+        boolean isCheckedId = false;
+        boolean duplicateId = false;
         askMainWithMessage2("6자 이상, 20자 이하의 아이디를 입력하세요.", "알파벳과 숫자, 일부 특수문자(_-.)만 입력 가능합니다.");
 
         do {
-            inputId = br.readLine();
-            checkedId = isValidId(inputId);
+            try{ inputId = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
+            isCheckedId = isValidId(inputId);
             duplicateId = false;
 
             if(inputId.equals("X") || inputId.equals("x")) {
                 moveMain();
                 return "";
-            } else if (!checkedId) {
+            } else if (!isCheckedId) {
                 askMainWithMessage2("6자 이상, 20자 이하의 아이디를 다시 입력하세요.", "알파벳과 숫자, 일부 특수문자(_-.)만 입력 가능합니다.");
             } else {
                 try {
                     Class.forName(DRIVER);
-                    con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+                    con = DriverManager.getConnection(URL, USER, PASSWORD);
 
                     sql = "SELECT id FROM user_info";
                     pstmt = con.prepareStatement(sql);
@@ -873,7 +994,7 @@ public class UserService {
                     if(con!= null) try {con.close();} catch (SQLException e) {e.printStackTrace();}
                 }
             }
-        } while(!checkedId || duplicateId);
+        } while(!isCheckedId || duplicateId);
         return inputId;
     }
 
@@ -885,37 +1006,38 @@ public class UserService {
         return matcherPassword.matches();
     }
 
-    private String signUpPassword() throws IOException, InterruptedException {
+    private String signUpPassword() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String inputPassword;
-        boolean checkedPassword;
+        String inputPassword = null;
+        String confirmPassword = null;
+        boolean isCheckedPassword = false;
         boolean differPassword = false;
         sequenceMessage("\n\n비밀번호를 입력하세요.");
 
         do {
             wait05Sec();
             askMainWithMessage("\n비밀번호는 8자 이상이어야 하며, 대소문자와 특수문자, 숫자를 각각 하나 이상 포함해야 합니다.");
-            inputPassword = br.readLine();
+            try { inputPassword = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
             initializeConsole();
-            checkedPassword = isValidPassword(inputPassword);
+            isCheckedPassword = isValidPassword(inputPassword);
 
             if(inputPassword.equals("X") || inputPassword.equals("x")) {
                 moveMain();
                 return "";
-            } else if (!checkedPassword) {
+            } else if (!isCheckedPassword) {
                 sequenceMessage("\n비밀번호를 다시 입력하세요.");
                 continue;
             }
 
             differPassword = false;
             sequenceMessage("\n비밀번호를 한번 더 입력하세요.\n> ");
-            String confirmPassword = br.readLine();
+            try { confirmPassword = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
             initializeConsole();
             if(!inputPassword.equals(confirmPassword)) {
                 sequenceMessage("\n비밀번호가 다릅니다. 다시 입력하세요.");
                 differPassword = true;
             }
-        } while(!checkedPassword || differPassword);
+        } while(!isCheckedPassword || differPassword);
         return inputPassword;
     }
     
@@ -927,70 +1049,100 @@ public class UserService {
         return matcherName.matches();
     }
 
-    private String signUpName() throws IOException, InterruptedException {
+    private String signUpName() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String inputName;
-        boolean checkedName;
+        String inputName = null;
+        boolean isCheckedName = false;
         askMainWithMessage("이름을 입력하세요.");
 
         do {
-            inputName = br.readLine();
-            checkedName = isValidName(inputName);
+            try { inputName = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
+            isCheckedName = isValidName(inputName);
 
             if(inputName.equals("X") || inputName.equals("x")) {
                 moveMain();
                 return "";
-            } else if (!checkedName) {
+            } else if (!isCheckedName) {
                 sequenceMessage("\n이름을 다시 입력하세요.\n> ");
             }
-        } while(!checkedName);
+        } while(!isCheckedName);
         return inputName;
     }
     
 
     // 생년월일 유효성 검사
-    private boolean isValidBirthDate(String inputBirthDate) {
-        Pattern patternBirthDate = Pattern.compile("^\\d{6}$");
-        Matcher matcherBirthDate = patternBirthDate.matcher(inputBirthDate);
-        return matcherBirthDate.matches();
+    private boolean isValidAge(String inputAge) {
+        Pattern patternAge = Pattern.compile("^\\d{1,3}$");
+        Matcher matcherAge = patternAge.matcher(inputAge);
+        return matcherAge.matches();
     }
 
-    private boolean verifyBirthDate(String inputBirthDate) {
-        if(inputBirthDate.length() < 6) return false;
-
-        String birth = inputBirthDate.substring(2, 4);
-        if(birth.equals("00")) return false;
-        if(Integer.parseInt(birth) > 12) return false;
-
-        String date = inputBirthDate.substring(4, 6);
-        int[] dateList = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        boolean checkDate = true;
-        for(int i = 0; i < 12; i++) {
-            if (Integer.parseInt(birth) - 1 == i) checkDate = Integer.parseInt(date) <= dateList[i];
-        }
-        return checkDate;
+    private boolean isValidBirth(String inputBirth) {
+        Pattern patternBirth = Pattern.compile("^\\d{6}$");
+        Matcher matcherBirth = patternBirth.matcher(inputBirth);
+        return matcherBirth.matches();
     }
 
-    private String signUpBirthDate() throws IOException, InterruptedException {
+    private boolean verifyBirth(String inputAge, String inputBirth) {
+        if(inputBirth.length()!= 6) return false;
+
+        int year = 2024 - Integer.parseInt(inputAge) + 1;
+
+        int month = Integer.parseInt(inputBirth.substring(2, 4));
+        if(month == 0 || month > 12) return false;
+
+        int date = Integer.parseInt(inputBirth.substring(4, 6));
+        int february = isLeapYear(year) ? 29 : 28;
+        int[] dateList = {31, february, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        if(date == 0 || date > dateList[month-1]) return false;
+
+        return true;
+    }
+
+    private String signUpBirth() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String inputBirthDate;
-        boolean checkedBirthDate;
-        askMainWithMessage("생년월일을 입력하세요.");
+        String inputAge = null;
+        String inputBirth = null;
+        boolean isCheckedAge = false;
+        boolean isCheckedBirth = false;
 
+        askMainWithMessage("나이를 입력하세요.");
         do {
-            inputBirthDate = br.readLine();
-            checkedBirthDate = isValidBirthDate(inputBirthDate) && verifyBirthDate(inputBirthDate);
-
-            if(inputBirthDate.equals("X") || inputBirthDate.equals("x")) {
+            isCheckedAge = true;
+            try { inputAge = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
+            if(isX(inputAge)) {
                 moveMain();
                 return "";
-            } else if (!checkedBirthDate) {
-                sequenceMessage("\n생년월일을 다시 입력하세요.\n> ");
+            } else if (!isValidAge(inputAge)) {
+                sequenceMessage("\n나이를 다시 입력하세요.\n> ");
+                isCheckedAge = false;
+            } else if (Integer.parseInt(inputAge) > 120 || Integer.parseInt(inputAge) < 1) {
+                sequenceMessage("\n나이를 다시 입력하세요.\n> ");
+                isCheckedAge = false;
             }
-        } while(!checkedBirthDate);
-        return inputBirthDate;
+        } while(!isCheckedAge);
+
+        askMainWithMessage("생년월일 6자리를 입력하세요.");
+
+        do {
+            try { inputBirth = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
+            isCheckedBirth = isValidBirth(inputBirth) && verifyBirth(inputAge, inputBirth);
+
+            if(inputBirth.equals("X") || inputBirth.equals("x")) {
+                moveMain();
+                return "";
+            } else if (!isCheckedBirth) {
+                askMainWithMessage("생년월일을 다시 입력하세요.");
+            }
+        } while(!isCheckedBirth);
+        return inputBirth;
     }
 
+
+    // 윤년 검사
+    private boolean isLeapYear(int year) {
+        return (year % 4 == 0 && year % 100!= 0) || year % 400 == 0;
+    }
 
     // 이메일 유효성 검사
     private boolean isValidEmail(String inputEmail) {
@@ -999,27 +1151,27 @@ public class UserService {
         return matcherEmail.matches();
     }
 
-    private String signUpEmail() throws IOException, InterruptedException {
+    private String signUpEmail() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String inputEmail;
-        boolean checkedEmail;
+        String inputEmail = null;
+        boolean isCheckedEmail;
         boolean duplicateEmail;
         askMainWithMessage2("이메일을 입력하세요.", "이메일의 아이디는 6자 이상, 20자 이하여야 합니다.");
 
         do {
-            inputEmail = br.readLine();
-            checkedEmail = isValidEmail(inputEmail);
+            try { inputEmail = br.readLine(); } catch (IOException e) { e.printStackTrace(); }
+            isCheckedEmail = isValidEmail(inputEmail);
             duplicateEmail = false;
 
             if(inputEmail.equals("X") || inputEmail.equals("x")) {
                 moveMain();
                 return "";
-            } else if (!checkedEmail) {
+            } else if (!isCheckedEmail) {
                 sequenceMessage("\n이메일을 다시 입력하세요.\n> ");
             } else {
                 try {
                     Class.forName(DRIVER);
-                    con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+                    con = DriverManager.getConnection(URL, USER, PASSWORD);
 
                     sql = "SELECT email FROM user_info";
                     pstmt = con.prepareStatement(sql);
@@ -1042,7 +1194,7 @@ public class UserService {
                     if(con!= null) try {con.close();} catch (SQLException e) {e.printStackTrace();}
                 }
             }
-        } while(!checkedEmail || duplicateEmail);
+        } while(!isCheckedEmail || duplicateEmail);
         return inputEmail;
     }
     
@@ -1054,7 +1206,7 @@ public class UserService {
         return matcherAddress.matches();
     }
 
-    private String signUpAddress() throws IOException, InterruptedException {
+    private String signUpAddress() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String inputAddress;
         boolean checkedAddress;
@@ -1079,7 +1231,7 @@ public class UserService {
     private int selectNoFromDB(String inputId) {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "SELECT no FROM user_info WHERE id=?";
             pstmt = con.prepareStatement(sql);
@@ -1109,7 +1261,7 @@ public class UserService {
     private String selectIdFromDB() {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "SELECT id FROM user_info WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -1141,7 +1293,7 @@ public class UserService {
     private String selectPasswordFromDB() {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "SELECT password FROM user_info WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -1173,7 +1325,7 @@ public class UserService {
     private String selectNameFromDB() {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "SELECT name FROM user_info WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -1205,7 +1357,7 @@ public class UserService {
     private String selectEmailFromDB() {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "SELECT email FROM user_info WHERE no=?";
             pstmt = con.prepareStatement(sql);
@@ -1237,7 +1389,7 @@ public class UserService {
     private String selectAddressFromDB() {
         try {
             Class.forName(DRIVER);
-            con = DriverManager.getConnection(URL, "USER", "PASSWORD");
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
 
             sql = "SELECT address FROM user_info WHERE no=?";
             pstmt = con.prepareStatement(sql);
